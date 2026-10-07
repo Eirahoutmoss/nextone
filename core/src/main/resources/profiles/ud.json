@@ -12,27 +12,33 @@
       "teller": [
         {
           "ad": "6",
-          "nota": "Do♯2"
+          "nota": "Do♯2",
+          "telSayisi": 1
         },
         {
           "ad": "5",
-          "nota": "Fa♯2"
+          "nota": "Fa♯2",
+          "telSayisi": 2
         },
         {
           "ad": "4",
-          "nota": "Si2"
+          "nota": "Si2",
+          "telSayisi": 2
         },
         {
           "ad": "3",
-          "nota": "Mi3"
+          "nota": "Mi3",
+          "telSayisi": 2
         },
         {
           "ad": "2",
-          "nota": "La3"
+          "nota": "La3",
+          "telSayisi": 2
         },
         {
           "ad": "1",
-          "nota": "Re4"
+          "nota": "Re4",
+          "telSayisi": 2
         }
       ],
       "kaynak": "en.wikipedia.org/wiki/Oud",
@@ -77,31 +83,38 @@
       "teller": [
         {
           "ad": "6",
-          "nota": "Re2"
+          "nota": "Re2",
+          "telSayisi": 1
         },
         {
           "ad": "5",
-          "nota": "Sol2"
+          "nota": "Sol2",
+          "telSayisi": 2
         },
         {
           "ad": "4",
-          "nota": "La2"
+          "nota": "La2",
+          "telSayisi": 2
         },
         {
           "ad": "3",
-          "nota": "Re3"
+          "nota": "Re3",
+          "telSayisi": 2
         },
         {
           "ad": "2",
-          "nota": "Sol3"
+          "nota": "Sol3",
+          "telSayisi": 2
         },
         {
           "ad": "1",
-          "nota": "Do4"
+          "nota": "Do4",
+          "telSayisi": 2
         }
       ],
       "kaynak": "en.wikipedia.org/wiki/Oud",
       "dogrulandi": true
     }
-  ]
+  ],
+  "bilgi": "Ud genellikle 11 tellidir: en pes tel tek, diğer beş grup çift (aynı sese akort edilir). Kaynak: en.wikipedia.org/wiki/Oud"
 }

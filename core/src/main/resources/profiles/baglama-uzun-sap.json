@@ -30,15 +30,18 @@
       "teller": [
         {
           "ad": "Alt",
-          "nota": "La4"
+          "nota": "La4",
+          "telSayisi": 2
         },
         {
           "ad": "Orta",
-          "nota": "Re4"
+          "nota": "Re4",
+          "telSayisi": 2
         },
         {
           "ad": "Üst",
-          "nota": "Sol3"
+          "nota": "Sol3",
+          "telSayisi": 3
         }
       ],
       "kaynak": "flutnotalari.com/baglama; eksisozluk.com/baglama-duzeni--104155",
@@ -51,20 +54,24 @@
       "teller": [
         {
           "ad": "Alt",
-          "nota": "Re4"
+          "nota": "Re4",
+          "telSayisi": 2
         },
         {
           "ad": "Orta",
-          "nota": "Sol3"
+          "nota": "Sol3",
+          "telSayisi": 2
         },
         {
           "ad": "Üst",
-          "nota": "La3"
+          "nota": "La3",
+          "telSayisi": 3
         }
       ],
       "kaynak": "eksisozluk.com/baglama-duzeni--104155",
       "dogrulandi": false,
       "not": "Nota sınıfları kısa sap bağlamayla aynı; oktavlar yalnızca referans sesi içindir ve öğretmenle doğrulanacak."
     }
-  ]
+  ],
+  "bilgi": "Uzun sap bağlama genellikle 7 tellidir: alt 2, orta 2, üst 3. Üst gruptaki tellerden biri çoğunlukla bir oktav pes akort edilir (kalın tel). Uygulama tel gruplarını oktavdan bağımsız tanıdığı için bu tel de aynı grupta akort edilebilir. Tel sayısı yöreye ve yapıma göre 6–9 arasında değişebilir; öğretmenle doğrulanacak."
 }

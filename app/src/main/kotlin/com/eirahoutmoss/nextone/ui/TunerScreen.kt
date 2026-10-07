@@ -287,6 +287,15 @@ private fun TunerBody(controller: TunerController) {
                 modifier = Modifier.padding(top = 6.dp),
             )
         }
+        controller.profile.info?.let { info ->
+            Text(
+                info,
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+            )
+        }
 
         Spacer(Modifier.height(20.dp))
         val refName = if (free) signal?.heardName ?: "La4"
@@ -343,7 +352,7 @@ private fun StringButtons(view: TunerView, onSelect: (Int) -> Unit) {
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(s.targetName, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
-                    Text(s.label, fontSize = 11.sp, maxLines = 1)
+                    Text(s.label + (s.count?.let { " · $it tel" } ?: ""), fontSize = 11.sp, maxLines = 1)
                 }
             }
         }

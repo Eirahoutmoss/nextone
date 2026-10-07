@@ -1,0 +1,61 @@
+{
+  "id": "gitar-12",
+  "ad": "12 telli gitar",
+  "aile": "bati",
+  "varsayilanOkuma": "bati",
+  "pencere": 2048,
+  "oktavdanBagimsiz": false,
+  "bilgi": "6 tel grubu, her grupta 2 tel. Pes dört grupta ikinci tel bir oktav tizdir (oktav teli); en tiz iki grupta iki tel aynı sestir. Uygulama oktav telini de kendi grubu olarak tanır.",
+  "duzenler": [
+    {
+      "id": "standart",
+      "ad": "Standart",
+      "teller": [
+        {
+          "ad": "6",
+          "nota": "Mi2",
+          "telSayisi": 2,
+          "oktavTelleri": [
+            "Mi3"
+          ]
+        },
+        {
+          "ad": "5",
+          "nota": "La2",
+          "telSayisi": 2,
+          "oktavTelleri": [
+            "La3"
+          ]
+        },
+        {
+          "ad": "4",
+          "nota": "Re3",
+          "telSayisi": 2,
+          "oktavTelleri": [
+            "Re4"
+          ]
+        },
+        {
+          "ad": "3",
+          "nota": "Sol3",
+          "telSayisi": 2,
+          "oktavTelleri": [
+            "Sol4"
+          ]
+        },
+        {
+          "ad": "2",
+          "nota": "Si3",
+          "telSayisi": 2
+        },
+        {
+          "ad": "1",
+          "nota": "Mi4",
+          "telSayisi": 2
+        }
+      ],
+      "kaynak": "Standart 12 telli gitar akordu",
+      "dogrulandi": true
+    }
+  ]
+}

@@ -12,23 +12,28 @@
       "teller": [
         {
           "ad": "Sol",
-          "nota": "Sol3"
+          "nota": "Sol3",
+          "telSayisi": 2
         },
         {
           "ad": "Re",
-          "nota": "Re4"
+          "nota": "Re4",
+          "telSayisi": 2
         },
         {
           "ad": "La",
-          "nota": "La4"
+          "nota": "La4",
+          "telSayisi": 2
         },
         {
           "ad": "Mi",
-          "nota": "Mi5"
+          "nota": "Mi5",
+          "telSayisi": 2
         }
       ],
       "kaynak": "Standart akort",
       "dogrulandi": true
     }
-  ]
+  ],
+  "bilgi": "4 tel grubu, her grupta aynı sese akort edilen 2 tel (toplam 8)."
 }

@@ -12,19 +12,23 @@
       "teller": [
         {
           "ad": "4",
-          "nota": "Mi1"
+          "nota": "Mi1",
+          "telSayisi": 1
         },
         {
           "ad": "3",
-          "nota": "La1"
+          "nota": "La1",
+          "telSayisi": 1
         },
         {
           "ad": "2",
-          "nota": "Re2"
+          "nota": "Re2",
+          "telSayisi": 1
         },
         {
           "ad": "1",
-          "nota": "Sol2"
+          "nota": "Sol2",
+          "telSayisi": 1
         }
       ],
       "kaynak": "Standart akort",
@@ -36,23 +40,28 @@
       "teller": [
         {
           "ad": "5",
-          "nota": "Si0"
+          "nota": "Si0",
+          "telSayisi": 1
         },
         {
           "ad": "4",
-          "nota": "Mi1"
+          "nota": "Mi1",
+          "telSayisi": 1
         },
         {
           "ad": "3",
-          "nota": "La1"
+          "nota": "La1",
+          "telSayisi": 1
         },
         {
           "ad": "2",
-          "nota": "Re2"
+          "nota": "Re2",
+          "telSayisi": 1
         },
         {
           "ad": "1",
-          "nota": "Sol2"
+          "nota": "Sol2",
+          "telSayisi": 1
         }
       ],
       "kaynak": "Standart akort",
@@ -64,19 +73,23 @@
       "teller": [
         {
           "ad": "4",
-          "nota": "Re1"
+          "nota": "Re1",
+          "telSayisi": 1
         },
         {
           "ad": "3",
-          "nota": "La1"
+          "nota": "La1",
+          "telSayisi": 1
         },
         {
           "ad": "2",
-          "nota": "Re2"
+          "nota": "Re2",
+          "telSayisi": 1
         },
         {
           "ad": "1",
-          "nota": "Sol2"
+          "nota": "Sol2",
+          "telSayisi": 1
         }
       ],
       "kaynak": "Standart akort",

@@ -12,19 +12,23 @@
       "teller": [
         {
           "ad": "Do",
-          "nota": "Do3"
+          "nota": "Do3",
+          "telSayisi": 1
         },
         {
           "ad": "Sol",
-          "nota": "Sol3"
+          "nota": "Sol3",
+          "telSayisi": 1
         },
         {
           "ad": "Re",
-          "nota": "Re4"
+          "nota": "Re4",
+          "telSayisi": 1
         },
         {
           "ad": "La",
-          "nota": "La4"
+          "nota": "La4",
+          "telSayisi": 1
         }
       ],
       "kaynak": "Standart akort",

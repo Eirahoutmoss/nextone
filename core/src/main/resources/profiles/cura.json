@@ -66,5 +66,6 @@
       "dogrulandi": false,
       "not": "Nota sınıfları kısa sap bağlamayla aynı; oktavlar yalnızca referans sesi içindir ve öğretmenle doğrulanacak."
     }
-  ]
+  ],
+  "bilgi": "Cura bağlamanın en küçüğüdür; tel sayısı yapıma göre değişir. Tel grupları oktavdan bağımsız tanınır."
 }

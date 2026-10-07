@@ -4,8 +4,18 @@ import com.eirahoutmoss.nextone.tuning.Notes
 
 enum class ReadingMode { WESTERN, MAKAM }
 
-data class StringSpec(val label: String, val note: String) {
+/**
+ * Bir tel grubu (course). [count]: gruptaki tel sayısı (bilinmiyorsa null).
+ * [octaveNotes]: gruptaki oktav tellerinin notaları (ör. 12 telli gitarda "Mi3"); ana nota [note].
+ */
+data class StringSpec(
+    val label: String,
+    val note: String,
+    val count: Int? = null,
+    val octaveNotes: List<String> = emptyList(),
+) {
     val midi: Int = Notes.parse(note)
+    val octaveMidis: List<Int> = octaveNotes.map { Notes.parse(it) }
 }
 
 data class TuningSpec(
@@ -46,6 +56,8 @@ data class InstrumentProfile(
     val octaveAgnostic: Boolean,
     val karar: KararSpec?,
     val tunings: List<TuningSpec>,
+    /** Çalgıyla ilgili kısa bilgi (ör. tel düzeni); arayüzde gösterilir. */
+    val info: String? = null,
     /** Serbest (kromatik) mod: tel yok, her ses en yakın perdeye göre okunur. */
     val free: Boolean = false,
     val transpositions: List<TranspositionOption>? = null,
@@ -101,7 +113,12 @@ object Profiles {
             val strings = (t["teller"] as List<*>).map { s ->
                 @Suppress("UNCHECKED_CAST")
                 s as Map<String, Any?>
-                StringSpec(str(s, "ad"), str(s, "nota"))
+                StringSpec(
+                    label = str(s, "ad"),
+                    note = str(s, "nota"),
+                    count = (s["telSayisi"] as? Double)?.toInt()?.also { require(it in 1..4) { "telSayisi 1–4 olmalı" } },
+                    octaveNotes = (s["oktavTelleri"] as? List<*>)?.map { it as String } ?: emptyList(),
+                )
             }
             require(strings.isNotEmpty()) { "Telsiz düzen: ${t["id"]}" }
             TuningSpec(
@@ -152,6 +169,7 @@ object Profiles {
             tunings = tunings,
             free = free,
             transpositions = transpositions,
+            info = m["bilgi"] as? String,
         )
     }
 }
