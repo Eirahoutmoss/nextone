@@ -32,3 +32,13 @@ Doğruluk raporu: `dsp/build/reports/nextone/dsp-dogruluk.md`. GitHub Actions he
 ## Doğrulanacak değerler
 
 Pes ve tiz oktavdaki bazı perde adları (Yegâh, Irak, Gevest, Sünbüle vb.) `tuning/.../PitchSystem.kt` içinde `[DOĞRULANACAK]` olarak işaretlidir; bir müzik öğretmeninin onayını bekler.
+
+## Sürüm çıkarma
+
+1. `SURUM` dosyasındaki numarayı artırın (ör. `0.1.0` → `0.2.0`).
+2. İsteğe bağlı: `docs/surum-notlari/v0.2.0.md` dosyasına sürüm notlarını yazın.
+3. Ana dala gönderin. GitHub Actions testleri koşturur, APK'yı gerçek anahtarla imzalar ve
+   bu numaranın sürümü henüz yoksa etiketi ve GitHub sürümünü kendisi oluşturur.
+
+İmza anahtarı GitHub secret'larında durur (`NEXTONE_KEYSTORE_B64`, `NEXTONE_KEYSTORE_PASSWORD`,
+`NEXTONE_KEY_ALIAS`). Anahtar yoksa APK geçici deneme imzasıyla derlenir ve sürüm yayınlanmaz.
