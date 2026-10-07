@@ -15,8 +15,8 @@ data class TrackerConfig(
     val hopSize: Int = 512,
     val fMin: Double = 25.0,
     val fMax: Double = 2500.0,
-    /** Bu seviyenin altı sessizlik sayılır (dBFS). */
-    val gateDbfs: Double = -55.0,
+    /** Bu seviyenin altı sessizlik sayılır (dBFS). İşlenmemiş mikrofon kaynağı kazançsız ve kısık olabildiği için düşük tutulur; gürültüye karşı asıl koruma netlik eşiğidir. */
+    val gateDbfs: Double = -65.0,
     /** MPM netliği bunun altındaysa okuma gösterilmez. Prototipte sönmüş tel 0,19 verdi. */
     val minClarity: Double = 0.70,
     /** Netlik bunun altındaysa YIN ile ikinci görüş alınır. */
