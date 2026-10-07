@@ -10,7 +10,12 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import com.eirahoutmoss.nextone.ui.NexColors
 import com.eirahoutmoss.nextone.ui.NexToneTheme
 import com.eirahoutmoss.nextone.ui.TunerScreen
 
@@ -34,7 +39,18 @@ class MainActivity : ComponentActivity() {
             packageManager.getPackageInfo(packageName, 0).versionName ?: ""
         } catch (_: Exception) { "" }
         setContent {
-            NexToneTheme {
+            val dark = when (controller.themeMode) {
+                ThemeMode.SYSTEM -> isSystemInDarkTheme()
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
+            }
+            // Durum çubuğu seçilen temaya uysun
+            SideEffect {
+                @Suppress("DEPRECATION")
+                window.statusBarColor = if (dark) NexColors.Black.toArgb() else android.graphics.Color.rgb(0xF6, 0xF8, 0xFC)
+                WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = !dark
+            }
+            NexToneTheme(dark = dark) {
                 TunerScreen(
                     controller = controller,
                     version = version,

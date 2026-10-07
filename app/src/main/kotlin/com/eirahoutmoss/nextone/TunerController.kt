@@ -10,6 +10,7 @@ import android.os.Vibrator
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.eirahoutmoss.nextone.core.ClassCode
 import com.eirahoutmoss.nextone.core.InstrumentProfile
 import com.eirahoutmoss.nextone.core.Profiles
 import com.eirahoutmoss.nextone.core.ReadingMode
@@ -19,6 +20,8 @@ import com.eirahoutmoss.nextone.core.TunerView
 import com.eirahoutmoss.nextone.dsp.TrackerState
 
 enum class MicPermission { UNKNOWN, GRANTED, DENIED }
+
+enum class ThemeMode { SYSTEM, LIGHT, DARK }
 
 /**
  * Arayüz durumunun tek sahibi. Ses motorundan gelen takipçi durumlarını ana iş parçacığında
@@ -38,6 +41,13 @@ class TunerController(private val context: Context) {
     var option by mutableStateOf(loadOption(profile))
         private set
     var settings by mutableStateOf(loadSettings())
+        private set
+    /** Etkin sınıf kodu; varken La4, (isteğe bağlı) perde sistemi ve bağlama karar sesi koddan gelir. */
+    var classCode by mutableStateOf(ClassCode.parse(prefs.getString("classCode", null) ?: ""))
+        private set
+    var themeMode by mutableStateOf(
+        runCatching { ThemeMode.valueOf(prefs.getString("theme", "SYSTEM")!!) }.getOrDefault(ThemeMode.SYSTEM)
+    )
         private set
     var session by mutableStateOf(newSession())
         private set
@@ -104,9 +114,31 @@ class TunerController(private val context: Context) {
             .putFloat("a4", s.a4.toFloat())
             .putString("reading", when (s.readingOverride) { null -> "auto"; ReadingMode.WESTERN -> "bati"; ReadingMode.MAKAM -> "makam" })
             .putString("makamSystem", s.makamSystemId)
+            .putFloat("zone", s.greenZoneCents.toFloat())
             .apply()
         rebuild()
     }
+
+    fun applyClassCode(code: ClassCode) {
+        classCode = code
+        prefs.edit().putString("classCode", code.text).apply()
+        rebuild()
+    }
+
+    fun leaveClassCode() {
+        classCode = null
+        prefs.edit().remove("classCode").apply()
+        rebuild()
+    }
+
+    fun setTheme(mode: ThemeMode) {
+        themeMode = mode
+        prefs.edit().putString("theme", mode.name).apply()
+    }
+
+    /** Sınıf kodu bağlama ailesinin karar sesini belirliyorsa true. */
+    val optionLockedByClass: Boolean
+        get() = classCode != null && profile.karar != null
 
     /** null: otomatik tel tanımaya dön. */
     fun selectString(index: Int?) {
@@ -130,7 +162,15 @@ class TunerController(private val context: Context) {
         view = session.update(TrackerState.Silence, SystemClock.elapsedRealtime())
     }
 
-    private fun newSession() = TunerSession(profile, profile.tuning(tuningId), settings, option)
+    private fun newSession(): TunerSession {
+        val code = classCode
+        val effective = if (code == null) settings else settings.copy(
+            a4 = code.a4.toDouble(),
+            makamSystemId = if (code.koma53) "koma53" else settings.makamSystemId,
+        )
+        val effectiveOption = if (code != null && profile.karar != null) code.karar else option
+        return TunerSession(profile, profile.tuning(tuningId), effective, effectiveOption)
+    }
 
     private fun loadOption(p: InstrumentProfile): String? =
         prefs.getString("karar_${p.id}", null)?.takeIf { it in p.optionNames } ?: p.defaultOption
@@ -143,6 +183,7 @@ class TunerController(private val context: Context) {
             else -> null
         },
         makamSystemId = prefs.getString("makamSystem", "aeu") ?: "aeu",
+        greenZoneCents = prefs.getFloat("zone", 3f).toDouble(),
     )
 
     @Suppress("DEPRECATION")
