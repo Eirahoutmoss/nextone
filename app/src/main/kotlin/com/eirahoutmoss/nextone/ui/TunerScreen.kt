@@ -38,8 +38,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.eirahoutmoss.nextone.MicPermission
+import com.eirahoutmoss.nextone.ThemeMode
 import com.eirahoutmoss.nextone.TunerController
+import com.eirahoutmoss.nextone.core.ClassCode
 import com.eirahoutmoss.nextone.core.ReadingMode
 import com.eirahoutmoss.nextone.core.TunerView
 import java.util.Locale
@@ -58,6 +63,7 @@ fun TunerScreen(
     onOpenAppSettings: () -> Unit,
 ) {
     var showSettings by remember { mutableStateOf(false) }
+    var showClassMode by remember { mutableStateOf(false) }
 
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
         Column(
@@ -67,6 +73,7 @@ fun TunerScreen(
                 .padding(horizontal = 16.dp, vertical = 12.dp),
         ) {
             TopBar(controller, onSettings = { showSettings = true })
+            controller.classCode?.let { code -> ClassBanner(code.text, onLeave = { controller.leaveClassCode() }) }
             Spacer(Modifier.height(8.dp))
 
             when (controller.permission) {
@@ -77,7 +84,14 @@ fun TunerScreen(
     }
 
     if (showSettings) {
-        SettingsDialog(controller, version, onDismiss = { showSettings = false })
+        SettingsDialog(
+            controller, version,
+            onDismiss = { showSettings = false },
+            onClassMode = { showSettings = false; showClassMode = true },
+        )
+    }
+    if (showClassMode) {
+        ClassModeDialog(controller, onDismiss = { showClassMode = false })
     }
 }
 
@@ -101,7 +115,15 @@ private fun TopBar(controller: TunerController, onSettings: () -> Unit) {
             )
         }
         val label = profile.optionLabel
-        if (label != null) {
+        if (label != null && controller.optionLockedByClass) {
+            Spacer(Modifier.width(4.dp))
+            Text(
+                "$label: ${controller.session.optionName} (sınıf)",
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 12.dp),
+            )
+        } else if (label != null) {
             Spacer(Modifier.width(4.dp))
             val names = profile.optionNames
             Picker(
@@ -274,7 +296,7 @@ private fun TunerBody(controller: TunerController) {
         }
 
         Spacer(Modifier.height(16.dp))
-        val s = controller.settings
+        val s = session.settings
         Text(
             "La4 = ${fmt(s.a4, "%.0f")} Hz  ·  ${session.system.displayName}",
             fontSize = 13.sp,
@@ -354,16 +376,37 @@ private fun PermissionNeeded(onRequest: () -> Unit, onOpenSettings: () -> Unit) 
 // ---------------------------------------------------------------- Ayarlar
 
 @Composable
-private fun SettingsDialog(controller: TunerController, version: String, onDismiss: () -> Unit) {
+private fun SettingsDialog(
+    controller: TunerController,
+    version: String,
+    onDismiss: () -> Unit,
+    onClassMode: () -> Unit,
+) {
     val s = controller.settings
+    val locked = controller.classCode != null
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = { TextButton(onClick = onDismiss) { Text("Tamam") } },
         title = { Text("Ayarlar") },
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                Text("Sınıf modu", fontWeight = FontWeight.SemiBold)
+                Text(
+                    controller.classCode?.let { "Etkin: ${it.text}" } ?: "Kapalı",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                OutlinedButton(onClick = onClassMode) { Text("Sınıf modu…") }
+
+                Spacer(Modifier.height(12.dp))
                 Text("Referans frekansı (La4)", fontWeight = FontWeight.SemiBold)
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                if (locked) {
+                    Text(
+                        "Sınıf modunda La4 sınıf kodundan gelir (${controller.classCode!!.a4} Hz).",
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                } else Row(verticalAlignment = Alignment.CenterVertically) {
                     TextButton(onClick = { controller.updateSettings(s.copy(a4 = (s.a4 - 1).coerceAtLeast(415.0))) }) { Text("−", fontSize = 22.sp) }
                     Text("${fmt(s.a4, "%.0f")} Hz", fontSize = 20.sp, modifier = Modifier.width(90.dp), textAlign = TextAlign.Center)
                     TextButton(onClick = { controller.updateSettings(s.copy(a4 = (s.a4 + 1).coerceAtMost(466.0))) }) { Text("+", fontSize = 22.sp) }
@@ -380,6 +423,20 @@ private fun SettingsDialog(controller: TunerController, version: String, onDismi
                 Text("Makam perde sistemi", fontWeight = FontWeight.SemiBold)
                 Choice("Arel-Ezgi-Uzdilek", s.makamSystemId == "aeu") { controller.updateSettings(s.copy(makamSystemId = "aeu")) }
                 Choice("53 koma", s.makamSystemId == "koma53") { controller.updateSettings(s.copy(makamSystemId = "koma53")) }
+
+                Spacer(Modifier.height(12.dp))
+                Text("Akortlu sayılan bölge", fontWeight = FontWeight.SemiBold)
+                for (z in listOf(2.0, 3.0, 5.0)) {
+                    Choice("± ${fmt(z, "%.0f")} cent" + if (z == 3.0) " (önerilen)" else "", s.greenZoneCents == z) {
+                        controller.updateSettings(s.copy(greenZoneCents = z))
+                    }
+                }
+
+                Spacer(Modifier.height(12.dp))
+                Text("Tema", fontWeight = FontWeight.SemiBold)
+                Choice("Telefonun ayarına göre", controller.themeMode == ThemeMode.SYSTEM) { controller.setTheme(ThemeMode.SYSTEM) }
+                Choice("Açık", controller.themeMode == ThemeMode.LIGHT) { controller.setTheme(ThemeMode.LIGHT) }
+                Choice("Koyu", controller.themeMode == ThemeMode.DARK) { controller.setTheme(ThemeMode.DARK) }
 
                 Spacer(Modifier.height(16.dp))
                 Text("NexTone $version", fontWeight = FontWeight.SemiBold)
@@ -402,4 +459,97 @@ private fun Choice(label: String, selected: Boolean, onClick: () -> Unit) {
         RadioButton(selected = selected, onClick = onClick)
         Text(label, fontSize = 16.sp)
     }
+}
+
+// ---------------------------------------------------------------- Sınıf modu
+
+@Composable
+private fun ClassBanner(code: String, onLeave: () -> Unit) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 14.dp)) {
+            Text("Sınıf modu", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(Modifier.width(8.dp))
+            Text(code, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.weight(1f))
+            TextButton(onClick = onLeave) { Text("Çık") }
+        }
+    }
+}
+
+@Composable
+private fun ClassModeDialog(controller: TunerController, onDismiss: () -> Unit) {
+    var input by remember { mutableStateOf("") }
+    var inputError by remember { mutableStateOf(false) }
+    val baseKarar = controller.classCode?.karar
+        ?: controller.option?.takeIf { it in ClassCode.KARAR_NAMES }
+        ?: "La"
+    var karar by remember { mutableStateOf(baseKarar) }
+    val a4 = controller.settings.a4.toInt().coerceIn(ClassCode.A4_RANGE)
+    val koma53 = controller.settings.makamSystemId == "koma53"
+    val created = ClassCode(karar, a4, koma53)
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = { TextButton(onClick = onDismiss) { Text("Kapat") } },
+        title = { Text("Sınıf modu") },
+        text = {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                Text(
+                    "Öğretmen bir kod oluşturur ve tahtaya yazar. Öğrenciler kodu girer; " +
+                        "bütün telefonlar aynı La frekansına, bağlamalar aynı karar sesine geçer. İnternet gerekmez.",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+
+                Spacer(Modifier.height(14.dp))
+                Text("Öğrenci: kodu girin", fontWeight = FontWeight.SemiBold)
+                OutlinedTextField(
+                    value = input,
+                    onValueChange = { input = it; inputError = false },
+                    singleLine = true,
+                    placeholder = { Text("ör. RE-440") },
+                    isError = inputError,
+                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                if (inputError) {
+                    Text("Kod anlaşılamadı. Örnek: RE-440, DO#-442, SOL-440-53", color = MaterialTheme.colorScheme.error, fontSize = 13.sp)
+                }
+                Button(onClick = {
+                    val code = ClassCode.parse(input)
+                    if (code == null) inputError = true else { controller.applyClassCode(code); onDismiss() }
+                }) { Text("Uygula") }
+
+                Spacer(Modifier.height(18.dp))
+                Text("Öğretmen: kod oluşturun", fontWeight = FontWeight.SemiBold)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Bağlama karar sesi:", fontSize = 15.sp)
+                    Picker(label = karar, options = ClassCode.KARAR_NAMES, onPick = { karar = ClassCode.KARAR_NAMES[it] })
+                }
+                Text(
+                    "La4 = $a4 Hz" + (if (koma53) " · 53 koma" else "") + " (Ayarlar'dan değiştirilebilir)",
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    created.text,
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                )
+                OutlinedButton(onClick = { controller.applyClassCode(created); onDismiss() }) {
+                    Text("Bu telefonda da uygula")
+                }
+                if (controller.classCode != null) {
+                    TextButton(onClick = { controller.leaveClassCode(); onDismiss() }) { Text("Sınıf modundan çık") }
+                }
+            }
+        },
+    )
 }
