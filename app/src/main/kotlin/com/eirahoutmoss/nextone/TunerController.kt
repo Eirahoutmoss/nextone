@@ -34,7 +34,8 @@ class TunerController(private val context: Context) {
         private set
     var tuningId by mutableStateOf(prefs.getString("tuning_${profile.id}", null) ?: profile.tunings.first().id)
         private set
-    var karar by mutableStateOf(profile.karar?.let { prefs.getString("karar_${profile.id}", null) ?: it.default })
+    /** Karar sesi (bağlama) ya da transpozisyon (serbest mod); seçeneği olmayan çalgıda null. */
+    var option by mutableStateOf(loadOption(profile))
         private set
     var settings by mutableStateOf(loadSettings())
         private set
@@ -79,7 +80,7 @@ class TunerController(private val context: Context) {
     fun selectProfile(p: InstrumentProfile) {
         profile = p
         tuningId = prefs.getString("tuning_${p.id}", null) ?: p.tunings.first().id
-        karar = p.karar?.let { prefs.getString("karar_${p.id}", null) ?: it.default }
+        option = loadOption(p)
         prefs.edit().putString("profile", p.id).apply()
         rebuild()
         if (engine.isRunning && engineWindow != p.window) start()
@@ -91,9 +92,9 @@ class TunerController(private val context: Context) {
         rebuild()
     }
 
-    fun selectKarar(k: String) {
-        karar = k
-        prefs.edit().putString("karar_${profile.id}", k).apply()
+    fun selectOption(o: String) {
+        option = o
+        prefs.edit().putString("karar_${profile.id}", o).apply()
         rebuild()
     }
 
@@ -114,6 +115,11 @@ class TunerController(private val context: Context) {
     }
 
     fun playReference() {
+        if (view.free) {
+            // Serbest mod: son duyulan sese en yakın perde; henüz ses yoksa La4
+            ReferenceTone.play(view.signal?.heardTargetHz ?: settings.a4)
+            return
+        }
         val idx = view.activeString.takeIf { it >= 0 } ?: 0
         val target = view.strings.getOrNull(idx) ?: return
         ReferenceTone.play(target.targetHz)
@@ -124,7 +130,10 @@ class TunerController(private val context: Context) {
         view = session.update(TrackerState.Silence, SystemClock.elapsedRealtime())
     }
 
-    private fun newSession() = TunerSession(profile, profile.tuning(tuningId), settings, karar)
+    private fun newSession() = TunerSession(profile, profile.tuning(tuningId), settings, option)
+
+    private fun loadOption(p: InstrumentProfile): String? =
+        prefs.getString("karar_${p.id}", null)?.takeIf { it in p.optionNames } ?: p.defaultOption
 
     private fun loadSettings() = TunerSettings(
         a4 = prefs.getFloat("a4", 440f).toDouble(),

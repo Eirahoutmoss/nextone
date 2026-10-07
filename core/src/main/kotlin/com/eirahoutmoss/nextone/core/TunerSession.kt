@@ -32,6 +32,8 @@ data class TunerView(
     /** null: ses yok ya da net değil. */
     val signal: Signal?,
     val listening: Boolean,
+    /** Serbest (kromatik) mod: tel yok; sapma en yakın perdeye göre. */
+    val free: Boolean = false,
 ) {
     data class Signal(
         val frequency: Double,
@@ -48,6 +50,8 @@ data class TunerView(
         /** Çalınan sesin diğer dildeki adı (ikincil satır). */
         val heardAltName: String,
         val heardKoma: Double?,
+        /** Çalınan sese en yakın perdenin gerçek frekansı (serbest modda referans sesi için). */
+        val heardTargetHz: Double,
     )
 }
 
@@ -59,10 +63,12 @@ class TunerSession(
     val profile: InstrumentProfile,
     val tuning: TuningSpec,
     val settings: TunerSettings,
-    karar: String? = null,
+    /** Karar sesi (bağlama) ya da transpozisyon seçeneğinin adı; null: profilin varsayılanı. */
+    option: String? = null,
 ) {
-    val kararName: String? = profile.karar?.let { karar ?: it.default }
-    val transposeCents: Double = profile.karar?.transposeCents(kararName!!) ?: 0.0
+    val optionName: String? = option?.takeIf { it in profile.optionNames } ?: profile.defaultOption
+    val transposeCents: Double = profile.transposeCents(optionName)
+    val free: Boolean = profile.free || tuning.strings.isEmpty()
     val readingMode: ReadingMode = settings.readingOverride ?: profile.defaultReading
     val system: PitchSystem =
         if (readingMode == ReadingMode.WESTERN) EqualTemperament
@@ -83,9 +89,10 @@ class TunerSession(
     private var manualIndex: Int? = null
     private var zoneSince: Long = -1
     private var confirmed = false
-    private var lastString = -1
+    private var lastKey = ""
 
     fun selectString(index: Int?) {
+        if (free) return
         manualIndex = index
         if (index != null) matcher.select(index)
         resetZone()
@@ -94,12 +101,25 @@ class TunerSession(
     fun update(state: TrackerState, nowMs: Long): TunerView {
         if (state !is TrackerState.Pitch) {
             if (state is TrackerState.Silence) resetZone()
-            return TunerView(strings, activeIndex(), manualIndex != null, null, listening = true)
+            return TunerView(strings, if (free) -1 else activeIndex(), manualIndex != null, null, listening = true, free = free)
         }
         val f = state.frequency
-        val idx = manualIndex ?: matcher.match(f)
-        if (idx != lastString) { resetZone(); lastString = idx }
-        val dev = matcher.deviation(f, idx)
+        val nf = nameFrequency(f)
+        val heard = system.read(nf, settings.a4, transposeCents)
+        val alt = altSystem.read(nf, settings.a4, transposeCents)
+
+        val idx: Int
+        val dev: Double
+        if (free) {
+            // Serbest mod: hedef, çalınan sese en yakın perde
+            idx = -1
+            dev = heard.cents
+            if (heard.name != lastKey) { resetZone(); lastKey = heard.name }
+        } else {
+            idx = manualIndex ?: matcher.match(f)
+            dev = matcher.deviation(f, idx)
+            if ("$idx" != lastKey) { resetZone(); lastKey = "$idx" }
+        }
         val zone = settings.greenZoneCents
         // Bölgeden çıkış için iki kat geniş eşik: sınırda titrerken onay tekrar tekrar verilmesin
         val inZone = abs(dev) <= zone || (zoneSince >= 0 && abs(dev) <= 2 * zone)
@@ -113,9 +133,6 @@ class TunerSession(
         } else if (!inZone) {
             resetZone()
         }
-        val nf = nameFrequency(f)
-        val heard = system.read(nf, settings.a4, transposeCents)
-        val alt = altSystem.read(nf, settings.a4, transposeCents)
         val signal = TunerView.Signal(
             frequency = f,
             deviationCents = dev,
@@ -126,8 +143,9 @@ class TunerSession(
             heardCents = heard.cents,
             heardAltName = displayName(alt.name),
             heardKoma = heard.koma,
+            heardTargetHz = heard.targetHz * (f / nf),
         )
-        return TunerView(strings, idx, manualIndex != null, signal, listening = true)
+        return TunerView(strings, idx, manualIndex != null && !free, signal, listening = true, free = free)
     }
 
     private fun activeIndex() = manualIndex ?: matcher.current

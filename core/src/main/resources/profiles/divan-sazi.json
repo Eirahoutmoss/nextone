@@ -1,0 +1,70 @@
+{
+  "id": "divan-sazi",
+  "ad": "Divan sazı",
+  "aile": "baglama",
+  "varsayilanOkuma": "makam",
+  "pencere": 4096,
+  "oktavdanBagimsiz": true,
+  "karar": {
+    "yazili": "La",
+    "varsayilan": "La",
+    "secenekler": [
+      "Do",
+      "Do♯",
+      "Re",
+      "Re♯",
+      "Mi",
+      "Fa",
+      "Fa♯",
+      "Sol",
+      "Sol♯",
+      "La",
+      "La♯",
+      "Si"
+    ]
+  },
+  "duzenler": [
+    {
+      "id": "bozuk",
+      "ad": "Bozuk düzen",
+      "teller": [
+        {
+          "ad": "Alt",
+          "nota": "La3"
+        },
+        {
+          "ad": "Orta",
+          "nota": "Re3"
+        },
+        {
+          "ad": "Üst",
+          "nota": "Sol2"
+        }
+      ],
+      "kaynak": "flutnotalari.com/baglama; eksisozluk.com/baglama-duzeni--104155",
+      "dogrulandi": false,
+      "not": "Nota sınıfları kısa sap bağlamayla aynı; oktavlar yalnızca referans sesi içindir ve öğretmenle doğrulanacak."
+    },
+    {
+      "id": "baglama-duzeni",
+      "ad": "Bağlama düzeni",
+      "teller": [
+        {
+          "ad": "Alt",
+          "nota": "Re3"
+        },
+        {
+          "ad": "Orta",
+          "nota": "Sol2"
+        },
+        {
+          "ad": "Üst",
+          "nota": "La2"
+        }
+      ],
+      "kaynak": "eksisozluk.com/baglama-duzeni--104155",
+      "dogrulandi": false,
+      "not": "Nota sınıfları kısa sap bağlamayla aynı; oktavlar yalnızca referans sesi içindir ve öğretmenle doğrulanacak."
+    }
+  ]
+}

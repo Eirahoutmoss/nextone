@@ -10,12 +10,30 @@
       "id": "standart",
       "ad": "Standart",
       "teller": [
-        { "ad": "6", "nota": "Mi2" },
-        { "ad": "5", "nota": "La2" },
-        { "ad": "4", "nota": "Re3" },
-        { "ad": "3", "nota": "Sol3" },
-        { "ad": "2", "nota": "Si3" },
-        { "ad": "1", "nota": "Mi4" }
+        {
+          "ad": "6",
+          "nota": "Mi2"
+        },
+        {
+          "ad": "5",
+          "nota": "La2"
+        },
+        {
+          "ad": "4",
+          "nota": "Re3"
+        },
+        {
+          "ad": "3",
+          "nota": "Sol3"
+        },
+        {
+          "ad": "2",
+          "nota": "Si3"
+        },
+        {
+          "ad": "1",
+          "nota": "Mi4"
+        }
       ],
       "kaynak": "Standart gitar akordu",
       "dogrulandi": true
@@ -24,12 +42,30 @@
       "id": "drop-d",
       "ad": "Drop D",
       "teller": [
-        { "ad": "6", "nota": "Re2" },
-        { "ad": "5", "nota": "La2" },
-        { "ad": "4", "nota": "Re3" },
-        { "ad": "3", "nota": "Sol3" },
-        { "ad": "2", "nota": "Si3" },
-        { "ad": "1", "nota": "Mi4" }
+        {
+          "ad": "6",
+          "nota": "Re2"
+        },
+        {
+          "ad": "5",
+          "nota": "La2"
+        },
+        {
+          "ad": "4",
+          "nota": "Re3"
+        },
+        {
+          "ad": "3",
+          "nota": "Sol3"
+        },
+        {
+          "ad": "2",
+          "nota": "Si3"
+        },
+        {
+          "ad": "1",
+          "nota": "Mi4"
+        }
       ],
       "kaynak": "Standart gitar akordu",
       "dogrulandi": true
@@ -38,14 +74,128 @@
       "id": "yarim-ton-pes",
       "ad": "Yarım ton pes",
       "teller": [
-        { "ad": "6", "nota": "Re♯2" },
-        { "ad": "5", "nota": "Sol♯2" },
-        { "ad": "4", "nota": "Do♯3" },
-        { "ad": "3", "nota": "Fa♯3" },
-        { "ad": "2", "nota": "La♯3" },
-        { "ad": "1", "nota": "Re♯4" }
+        {
+          "ad": "6",
+          "nota": "Re♯2"
+        },
+        {
+          "ad": "5",
+          "nota": "Sol♯2"
+        },
+        {
+          "ad": "4",
+          "nota": "Do♯3"
+        },
+        {
+          "ad": "3",
+          "nota": "Fa♯3"
+        },
+        {
+          "ad": "2",
+          "nota": "La♯3"
+        },
+        {
+          "ad": "1",
+          "nota": "Re♯4"
+        }
       ],
       "kaynak": "Standart gitar akordu",
+      "dogrulandi": true
+    },
+    {
+      "id": "dadgad",
+      "ad": "DADGAD",
+      "teller": [
+        {
+          "ad": "6",
+          "nota": "Re2"
+        },
+        {
+          "ad": "5",
+          "nota": "La2"
+        },
+        {
+          "ad": "4",
+          "nota": "Re3"
+        },
+        {
+          "ad": "3",
+          "nota": "Sol3"
+        },
+        {
+          "ad": "2",
+          "nota": "La3"
+        },
+        {
+          "ad": "1",
+          "nota": "Re4"
+        }
+      ],
+      "kaynak": "Yaygın gitar düzeni",
+      "dogrulandi": true
+    },
+    {
+      "id": "open-g",
+      "ad": "Open G",
+      "teller": [
+        {
+          "ad": "6",
+          "nota": "Re2"
+        },
+        {
+          "ad": "5",
+          "nota": "Sol2"
+        },
+        {
+          "ad": "4",
+          "nota": "Re3"
+        },
+        {
+          "ad": "3",
+          "nota": "Sol3"
+        },
+        {
+          "ad": "2",
+          "nota": "Si3"
+        },
+        {
+          "ad": "1",
+          "nota": "Re4"
+        }
+      ],
+      "kaynak": "Yaygın gitar düzeni",
+      "dogrulandi": true
+    },
+    {
+      "id": "open-d",
+      "ad": "Open D",
+      "teller": [
+        {
+          "ad": "6",
+          "nota": "Re2"
+        },
+        {
+          "ad": "5",
+          "nota": "La2"
+        },
+        {
+          "ad": "4",
+          "nota": "Re3"
+        },
+        {
+          "ad": "3",
+          "nota": "Fa♯3"
+        },
+        {
+          "ad": "2",
+          "nota": "La3"
+        },
+        {
+          "ad": "1",
+          "nota": "Re4"
+        }
+      ],
+      "kaynak": "Yaygın gitar düzeni",
       "dogrulandi": true
     }
   ]

@@ -1,0 +1,86 @@
+{
+  "id": "bas-gitar",
+  "ad": "Bas gitar",
+  "aile": "bati",
+  "varsayilanOkuma": "bati",
+  "pencere": 4096,
+  "oktavdanBagimsiz": false,
+  "duzenler": [
+    {
+      "id": "4-tel",
+      "ad": "4 telli",
+      "teller": [
+        {
+          "ad": "4",
+          "nota": "Mi1"
+        },
+        {
+          "ad": "3",
+          "nota": "La1"
+        },
+        {
+          "ad": "2",
+          "nota": "Re2"
+        },
+        {
+          "ad": "1",
+          "nota": "Sol2"
+        }
+      ],
+      "kaynak": "Standart akort",
+      "dogrulandi": true
+    },
+    {
+      "id": "5-tel",
+      "ad": "5 telli",
+      "teller": [
+        {
+          "ad": "5",
+          "nota": "Si0"
+        },
+        {
+          "ad": "4",
+          "nota": "Mi1"
+        },
+        {
+          "ad": "3",
+          "nota": "La1"
+        },
+        {
+          "ad": "2",
+          "nota": "Re2"
+        },
+        {
+          "ad": "1",
+          "nota": "Sol2"
+        }
+      ],
+      "kaynak": "Standart akort",
+      "dogrulandi": true
+    },
+    {
+      "id": "4-tel-drop-d",
+      "ad": "4 telli Drop D",
+      "teller": [
+        {
+          "ad": "4",
+          "nota": "Re1"
+        },
+        {
+          "ad": "3",
+          "nota": "La1"
+        },
+        {
+          "ad": "2",
+          "nota": "Re2"
+        },
+        {
+          "ad": "1",
+          "nota": "Sol2"
+        }
+      ],
+      "kaynak": "Standart akort",
+      "dogrulandi": true
+    }
+  ]
+}

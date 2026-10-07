@@ -1,0 +1,58 @@
+{
+  "id": "ukulele",
+  "ad": "Ukulele",
+  "aile": "bati",
+  "varsayilanOkuma": "bati",
+  "pencere": 2048,
+  "oktavdanBagimsiz": false,
+  "duzenler": [
+    {
+      "id": "gcea",
+      "ad": "Standart (GCEA)",
+      "teller": [
+        {
+          "ad": "4",
+          "nota": "Sol4"
+        },
+        {
+          "ad": "3",
+          "nota": "Do4"
+        },
+        {
+          "ad": "2",
+          "nota": "Mi4"
+        },
+        {
+          "ad": "1",
+          "nota": "La4"
+        }
+      ],
+      "kaynak": "Standart akort",
+      "dogrulandi": true
+    },
+    {
+      "id": "gcea-pes-sol",
+      "ad": "Pes Sol (Low G)",
+      "teller": [
+        {
+          "ad": "4",
+          "nota": "Sol3"
+        },
+        {
+          "ad": "3",
+          "nota": "Do4"
+        },
+        {
+          "ad": "2",
+          "nota": "Mi4"
+        },
+        {
+          "ad": "1",
+          "nota": "La4"
+        }
+      ],
+      "kaynak": "Standart akort",
+      "dogrulandi": true
+    }
+  ]
+}

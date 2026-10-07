@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eirahoutmoss.nextone.MicPermission
@@ -86,29 +87,27 @@ fun TunerScreen(
 private fun TopBar(controller: TunerController, onSettings: () -> Unit) {
     val profile = controller.profile
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-        Picker(
-            label = profile.name,
-            options = controller.profiles.map { it.name },
-            onPick = { controller.selectProfile(controller.profiles[it]) },
-            emphasized = true,
-        )
+        InstrumentPicker(controller)
         Spacer(Modifier.weight(1f))
         TextButton(onClick = onSettings) { Text("Ayarlar", fontSize = 15.sp) }
     }
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-        val tuning = profile.tuning(controller.tuningId)
-        Picker(
-            label = tuning.name,
-            options = profile.tunings.map { it.name },
-            onPick = { controller.selectTuning(profile.tunings[it].id) },
-        )
-        val karar = profile.karar
-        if (karar != null) {
-            Spacer(Modifier.width(4.dp))
+        if (!profile.free) {
+            val tuning = profile.tuning(controller.tuningId)
             Picker(
-                label = "Karar: ${controller.karar}",
-                options = karar.options,
-                onPick = { controller.selectKarar(karar.options[it]) },
+                label = tuning.name,
+                options = profile.tunings.map { it.name },
+                onPick = { controller.selectTuning(profile.tunings[it].id) },
+            )
+        }
+        val label = profile.optionLabel
+        if (label != null) {
+            Spacer(Modifier.width(4.dp))
+            val names = profile.optionNames
+            Picker(
+                label = "$label: ${controller.option ?: ""}",
+                options = names,
+                onPick = { controller.selectOption(names[it]) },
             )
         }
     }
@@ -123,11 +122,53 @@ private fun Picker(label: String, options: List<String>, onPick: (Int) -> Unit, 
                 "$label ▾",
                 fontSize = if (emphasized) 22.sp else 16.sp,
                 fontWeight = if (emphasized) FontWeight.SemiBold else FontWeight.Normal,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             options.forEachIndexed { i, o ->
                 DropdownMenuItem(text = { Text(o, fontSize = 17.sp) }, onClick = { open = false; onPick(i) })
+            }
+        }
+    }
+}
+
+private fun groupOf(family: String) = when (family) {
+    "bati" -> "Batı çalgıları"
+    "serbest" -> "Serbest"
+    else -> "Türk çalgıları"
+}
+
+@Composable
+private fun InstrumentPicker(controller: TunerController) {
+    var open by remember { mutableStateOf(false) }
+    Box {
+        TextButton(onClick = { open = true }) {
+            Text(
+                "${controller.profile.name} ▾",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+            var lastGroup = ""
+            controller.profiles.forEach { p ->
+                val g = groupOf(p.family)
+                if (g != lastGroup) {
+                    lastGroup = g
+                    DropdownMenuItem(
+                        text = { Text(g, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary) },
+                        onClick = {},
+                        enabled = false,
+                    )
+                }
+                DropdownMenuItem(
+                    text = { Text(p.name, fontSize = 17.sp) },
+                    onClick = { open = false; controller.selectProfile(p) },
+                )
             }
         }
     }
@@ -163,9 +204,10 @@ private fun TunerBody(controller: TunerController) {
 
         Spacer(Modifier.height(24.dp))
 
-        // Hedef tel adı (büyük)
+        val free = view.free
+        // Hedef tel adı (büyük); serbest modda duyulan sese en yakın perde
         Text(
-            text = active?.targetName ?: "—",
+            text = if (free) signal?.heardName ?: "—" else active?.targetName ?: "—",
             fontSize = 64.sp,
             fontWeight = FontWeight.Bold,
             color = when {
@@ -175,7 +217,7 @@ private fun TunerBody(controller: TunerController) {
             },
         )
         Text(
-            text = active?.let { "${it.label} tel" } ?: " ",
+            text = if (free) "Serbest mod" else active?.let { "${it.label} tel" } ?: " ",
             fontSize = 16.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -190,7 +232,7 @@ private fun TunerBody(controller: TunerController) {
             fontWeight = FontWeight.Medium,
         )
         Text(
-            text = statusText(signal, zone),
+            text = statusText(signal, zone, free),
             fontSize = 17.sp,
             color = when {
                 signal == null -> MaterialTheme.colorScheme.onSurfaceVariant
@@ -203,27 +245,32 @@ private fun TunerBody(controller: TunerController) {
         Spacer(Modifier.height(8.dp))
         // Çalınan sesin okunuşu (ikincil)
         Text(
-            text = signal?.let { "Duyulan: ${it.heardName}  ·  ${it.heardAltName}" } ?: "Bir tel çalın",
+            text = signal?.let { if (free) it.heardAltName else "Duyulan: ${it.heardName}  ·  ${it.heardAltName}" }
+                ?: if (free) "Bir ses çalın" else "Bir tel çalın",
             fontSize = 15.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
-        Spacer(Modifier.height(24.dp))
-        StringButtons(view, onSelect = { idx ->
-            controller.selectString(if (view.manual && view.activeString == idx) null else idx)
-        })
-        Text(
-            if (view.manual) "Elle seçildi — otomatik tanımaya dönmek için aynı tele tekrar dokunun"
-            else "Otomatik tel tanıma",
-            fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 6.dp),
-        )
+        if (!free) {
+            Spacer(Modifier.height(24.dp))
+            StringButtons(view, onSelect = { idx ->
+                controller.selectString(if (view.manual && view.activeString == idx) null else idx)
+            })
+            Text(
+                if (view.manual) "Elle seçildi — otomatik tanımaya dönmek için aynı tele tekrar dokunun"
+                else "Otomatik tel tanıma",
+                fontSize = 13.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 6.dp),
+            )
+        }
 
         Spacer(Modifier.height(20.dp))
+        val refName = if (free) signal?.heardName ?: "La4"
+        else active?.targetName ?: view.strings.firstOrNull()?.targetName ?: ""
         OutlinedButton(onClick = { controller.playReference() }) {
-            Text("♪  Referans sesi: ${active?.targetName ?: view.strings.firstOrNull()?.targetName ?: ""}", fontSize = 16.sp)
+            Text("♪  Referans sesi: $refName", fontSize = 16.sp)
         }
 
         Spacer(Modifier.height(16.dp))
@@ -243,10 +290,11 @@ private fun centsText(dev: Double, mode: ReadingMode, signal: TunerView.Signal):
     return c + "  (" + fmt(koma, "%+.2f") + " koma)"
 }
 
-private fun statusText(signal: TunerView.Signal?, zone: Double): String = when {
+private fun statusText(signal: TunerView.Signal?, zone: Double, free: Boolean): String = when {
     signal == null -> "Dinleniyor…"
-    signal.confirmed -> "Akortlu ✓"
+    signal.confirmed -> if (free) "Tam perdesinde ✓" else "Akortlu ✓"
     signal.inZone -> "Tamam, sabit tutun…"
+    free -> if (signal.deviationCents > 0) "Tiz ↓" else "Pes ↑"
     abs(signal.deviationCents) > 50 -> {
         val semis = (signal.deviationCents / 100.0).roundToInt()
         if (signal.deviationCents > 0) "Çok tiz (≈ $semis yarım ton) — gevşetin" else "Çok pes (≈ ${-semis} yarım ton) — gerin"

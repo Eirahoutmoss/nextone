@@ -34,6 +34,9 @@ data class KararSpec(val written: String, val default: String, val options: List
     }
 }
 
+/** Transpoze eden çalgı seçeneği: gerçek ses = yazılı nota + [cents]. */
+data class TranspositionOption(val name: String, val cents: Double)
+
 data class InstrumentProfile(
     val id: String,
     val name: String,
@@ -43,8 +46,31 @@ data class InstrumentProfile(
     val octaveAgnostic: Boolean,
     val karar: KararSpec?,
     val tunings: List<TuningSpec>,
+    /** Serbest (kromatik) mod: tel yok, her ses en yakın perdeye göre okunur. */
+    val free: Boolean = false,
+    val transpositions: List<TranspositionOption>? = null,
 ) {
     fun tuning(id: String?): TuningSpec = tunings.firstOrNull { it.id == id } ?: tunings.first()
+
+    /** Seçici başlığı: bağlama ailesinde "Karar", üflemelilerde "Transpozisyon"; yoksa null. */
+    val optionLabel: String?
+        get() = when {
+            karar != null -> "Karar"
+            transpositions != null -> "Transpozisyon"
+            else -> null
+        }
+
+    val optionNames: List<String>
+        get() = karar?.options ?: transpositions?.map { it.name } ?: emptyList()
+
+    val defaultOption: String?
+        get() = karar?.default ?: transpositions?.firstOrNull()?.name
+
+    fun transposeCents(option: String?): Double = when {
+        karar != null -> karar.transposeCents(option?.takeIf { it in karar.options } ?: karar.default)
+        transpositions != null -> (transpositions.firstOrNull { it.name == option } ?: transpositions.first()).cents
+        else -> 0.0
+    }
 }
 
 object Profiles {
@@ -66,7 +92,10 @@ object Profiles {
         fun str(map: Map<String, Any?>, k: String): String =
             map[k] as? String ?: throw IllegalArgumentException("'$k' alanı eksik (${m["id"]})")
 
-        val tunings = (m["duzenler"] as? List<*> ?: error("'duzenler' eksik")).map { t ->
+        val free = m["serbest"] as? Boolean ?: false
+        val rawTunings = (m["duzenler"] as? List<*>)
+            ?: if (free) emptyList<Any?>() else error("'duzenler' eksik (${m["id"]})")
+        val parsedTunings = rawTunings.map { t ->
             @Suppress("UNCHECKED_CAST")
             t as Map<String, Any?>
             val strings = (t["teller"] as List<*>).map { s ->
@@ -84,6 +113,7 @@ object Profiles {
                 note = t["not"] as? String,
             )
         }
+        val tunings = if (free) listOf(TuningSpec("kromatik", "Kromatik", emptyList(), null, true, null)) else parsedTunings
         require(tunings.isNotEmpty()) { "Düzen yok: ${m["id"]}" }
         require(tunings.map { it.id }.toSet().size == tunings.size) { "Yinelenen düzen kimliği: ${m["id"]}" }
 
@@ -98,6 +128,12 @@ object Profiles {
                 require(spec.default in spec.options) { "Varsayılan karar seçeneklerde yok" }
             }
         }
+
+        val transpositions = (m["transpozisyonlar"] as? List<*>)?.map { t ->
+            t as Map<*, *>
+            TranspositionOption(t["ad"] as String, (t["cent"] as Double))
+        }?.also { require(it.isNotEmpty()) { "Boş transpozisyon listesi" } }
+        require(karar == null || transpositions == null) { "Karar ve transpozisyon birlikte olamaz: ${m["id"]}" }
 
         val window = (m["pencere"] as? Double)?.toInt() ?: 2048
         require(window == 2048 || window == 4096) { "Pencere 2048 veya 4096 olmalı" }
@@ -114,6 +150,8 @@ object Profiles {
             octaveAgnostic = m["oktavdanBagimsiz"] as? Boolean ?: false,
             karar = karar,
             tunings = tunings,
+            free = free,
+            transpositions = transpositions,
         )
     }
 }
