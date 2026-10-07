@@ -29,6 +29,21 @@ jobs:
             cat dsp/build/reports/nextone/dsp-dogruluk.md >> "$GITHUB_STEP_SUMMARY"
           fi
 
+      - name: Test sayısı ve rapor notu
+        if: always()
+        run: |
+          total=0; fails=0; errors=0
+          for f in */build/test-results/test/*.xml; do
+            t=$(grep -o 'tests="[0-9]*"' "$f" | head -1 | grep -o '[0-9]*'); total=$((total+t))
+            x=$(grep -o 'failures="[0-9]*"' "$f" | head -1 | grep -o '[0-9]*'); fails=$((fails+x))
+            e=$(grep -o 'errors="[0-9]*"' "$f" | head -1 | grep -o '[0-9]*'); errors=$((errors+e))
+          done
+          echo "::notice title=Testler::$total test, $fails başarısız, $errors hata"
+          if [ -f dsp/build/reports/nextone/dsp-dogruluk.md ]; then
+            body=$(sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g' dsp/build/reports/nextone/dsp-dogruluk.md)
+            echo "::notice title=DSP doğruluk raporu::$body"
+          fi
+
       - name: Raporları sakla
         if: always()
         uses: actions/upload-artifact@v4
