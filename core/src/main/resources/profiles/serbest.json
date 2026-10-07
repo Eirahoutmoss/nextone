@@ -1,0 +1,43 @@
+{
+  "id": "serbest",
+  "ad": "Serbest (kromatik)",
+  "aile": "serbest",
+  "varsayilanOkuma": "bati",
+  "pencere": 2048,
+  "oktavdanBagimsiz": false,
+  "serbest": true,
+  "transpozisyonlar": [
+    {
+      "ad": "Do — piyano, yan flüt, melodika, keman…",
+      "cent": 0
+    },
+    {
+      "ad": "Blok flüt (soprano) — bir oktav tiz",
+      "cent": 1200
+    },
+    {
+      "ad": "Si♭ — klarnet, trompet, soprano saksafon",
+      "cent": -200
+    },
+    {
+      "ad": "Si♭ — tenor saksafon",
+      "cent": -1400
+    },
+    {
+      "ad": "Mi♭ — alto saksafon",
+      "cent": -900
+    },
+    {
+      "ad": "Mi♭ — bariton saksafon",
+      "cent": -2100
+    },
+    {
+      "ad": "Sol — Sol klarnet",
+      "cent": -500
+    },
+    {
+      "ad": "Fa — korno",
+      "cent": -700
+    }
+  ]
+}

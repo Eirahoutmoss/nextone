@@ -1,0 +1,34 @@
+{
+  "id": "kontrbas",
+  "ad": "Kontrbas",
+  "aile": "bati",
+  "varsayilanOkuma": "bati",
+  "pencere": 4096,
+  "oktavdanBagimsiz": false,
+  "duzenler": [
+    {
+      "id": "standart",
+      "ad": "Standart",
+      "teller": [
+        {
+          "ad": "Mi",
+          "nota": "Mi1"
+        },
+        {
+          "ad": "La",
+          "nota": "La1"
+        },
+        {
+          "ad": "Re",
+          "nota": "Re2"
+        },
+        {
+          "ad": "Sol",
+          "nota": "Sol2"
+        }
+      ],
+      "kaynak": "Standart akort",
+      "dogrulandi": true
+    }
+  ]
+}

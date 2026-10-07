@@ -1,0 +1,34 @@
+{
+  "id": "viyola",
+  "ad": "Viyola",
+  "aile": "bati",
+  "varsayilanOkuma": "bati",
+  "pencere": 2048,
+  "oktavdanBagimsiz": false,
+  "duzenler": [
+    {
+      "id": "standart",
+      "ad": "Standart",
+      "teller": [
+        {
+          "ad": "Do",
+          "nota": "Do3"
+        },
+        {
+          "ad": "Sol",
+          "nota": "Sol3"
+        },
+        {
+          "ad": "Re",
+          "nota": "Re4"
+        },
+        {
+          "ad": "La",
+          "nota": "La4"
+        }
+      ],
+      "kaynak": "Standart akort",
+      "dogrulandi": true
+    }
+  ]
+}

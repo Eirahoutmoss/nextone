@@ -43,9 +43,15 @@ class CoreTest {
 
     @Test
     fun `tum profiller yuklenir ve gecerli`() {
-        assertEquals(listOf("gitar", "keman", "baglama-kisa-sap"), profiles.map { it.id })
+        assertEquals(
+            listOf(
+                "gitar", "bas-gitar", "keman", "viyola", "viyolonsel", "kontrbas", "mandolin", "ukulele",
+                "baglama-kisa-sap", "baglama-uzun-sap", "cura", "divan-sazi", "ud", "serbest",
+            ),
+            profiles.map { it.id },
+        )
         for (p in profiles) for (t in p.tunings) {
-            assertTrue(t.strings.isNotEmpty(), "${p.id}/${t.id} telsiz")
+            assertTrue(p.free || t.strings.isNotEmpty(), "${p.id}/${t.id} telsiz")
             for (s in t.strings) assertTrue(s.midi in 20..100, "${p.id}/${t.id} ${s.note}")
         }
     }
@@ -152,7 +158,7 @@ class CoreTest {
     @Test
     fun `baglama karar do`() {
         val p = profile("baglama-kisa-sap")
-        val s = TunerSession(p, p.tuning("bozuk"), TunerSettings(), karar = "Do")
+        val s = TunerSession(p, p.tuning("bozuk"), TunerSettings(), option = "Do")
         // Yazılı La (Dügâh) gerçek Do'ya ayarlanır: 440 · 2^(300/1200)
         close(s.strings[0].targetHz, 440.0 * 2.0.pow(300.0 / 1200), 1e-6)
         assertEquals("Dügâh", s.strings[0].targetName)
@@ -172,5 +178,91 @@ class CoreTest {
         // Nevâ = Dügâh + 22 koma → Re4 = Dügâh − (53−22)… oktavdan bağımsız: hedefin nota sınıfı Nevâ
         val v = s.update(pitch(s.strings[1].targetHz * 2.0.pow(k / 1200)), 0)
         close(v.signal!!.heardKoma!!, 1.0, 1e-6)
+    }
+
+    // ---- K4: yeni çalgılar ----
+
+    @Test
+    fun `her profilin her duzeni oturum acar`() {
+        for (p in profiles) for (t in p.tunings) for (opt in listOf<String?>(null) + p.optionNames) {
+            val s = TunerSession(p, t, TunerSettings(), opt)
+            assertEquals(t.strings.size, s.strings.size)
+            for (sv in s.strings) assertTrue(sv.targetHz in 25.0..2500.0, "${p.id}/${t.id}/${sv.label}: ${sv.targetHz}")
+            s.update(pitch(220.0), 0)
+            s.update(TrackerState.Silence, 10)
+        }
+    }
+
+    @Test
+    fun `bes telli bas si0`() {
+        val p = profile("bas-gitar")
+        val s = TunerSession(p, p.tuning("5-tel"), TunerSettings())
+        close(s.strings[0].targetHz, 30.868, 0.001)
+        assertEquals(4096, p.window)
+        val v = s.update(pitch(s.strings[0].targetHz * 2.0.pow(-4.0 / 1200)), 0)
+        assertEquals(0, v.activeString)
+        close(v.signal!!.deviationCents, -4.0, 0.01)
+    }
+
+    @Test
+    fun `ud arap modern`() {
+        val p = profile("ud")
+        val s = TunerSession(p, p.tuning("arap-modern"), TunerSettings(readingOverride = ReadingMode.WESTERN))
+        assertEquals(listOf("Fa2", "La2", "Re3", "Sol3", "Do4", "Fa4"), s.strings.map { it.targetName })
+    }
+
+    @Test
+    fun `cura oktavdan bagimsiz ve adlar kisa sapla ayni`() {
+        val cura = profile("cura")
+        val kisa = profile("baglama-kisa-sap")
+        assertTrue(cura.octaveAgnostic)
+        val a = TunerSession(cura, cura.tuning("bozuk"), TunerSettings())
+        val b = TunerSession(kisa, kisa.tuning("bozuk"), TunerSettings())
+        assertEquals(b.strings.map { it.targetName }, a.strings.map { it.targetName })
+        close(a.strings[0].targetHz, 2 * b.strings[0].targetHz, 1e-6)    // cura bir oktav tiz
+    }
+
+    @Test
+    fun `serbest mod si bemol klarnet`() {
+        val p = profile("serbest")
+        assertTrue(p.free)
+        assertEquals("Transpozisyon", p.optionLabel)
+        val opt = p.optionNames.first { it.startsWith("Si♭ — klarnet") }
+        val s = TunerSession(p, p.tunings.first(), TunerSettings(), opt)
+        assertTrue(s.strings.isEmpty())
+        // Klarnette yazılı Re5 → gerçek Do5 (523,25 Hz)
+        val v = s.update(pitch(523.2511 * 2.0.pow(6.0 / 1200)), 0)
+        assertTrue(v.free)
+        assertEquals(-1, v.activeString)
+        assertEquals("Re5", v.signal!!.heardName)
+        close(v.signal!!.deviationCents, 6.0, 0.01)
+        close(v.signal!!.heardTargetHz, 523.2511, 0.01)
+    }
+
+    @Test
+    fun `serbest mod blok flut bir oktav tiz`() {
+        val p = profile("serbest")
+        val s = TunerSession(p, p.tunings.first(), TunerSettings(), p.optionNames.first { it.startsWith("Blok flüt") })
+        // Soprano blok flütte yazılı Do5 → gerçek Do6 (1046,5 Hz)
+        assertEquals("Do5", s.update(pitch(1046.502), 0).signal!!.heardName)
+    }
+
+    @Test
+    fun `serbest mod nota degisince onay sifirlanir`() {
+        val p = profile("serbest")
+        val s = TunerSession(p, p.tunings.first(), TunerSettings())
+        var t = 0L
+        var count = 0
+        repeat(80) { if (s.update(pitch(440.0), t).signal!!.confirmedNow) count++; t += 20 }    // La4
+        repeat(80) { if (s.update(pitch(493.883), t).signal!!.confirmedNow) count++; t += 20 }  // Si4
+        assertEquals(2, count)
+    }
+
+    @Test
+    fun `gecersiz secenek varsayilana duser`() {
+        val p = profile("baglama-kisa-sap")
+        val s = TunerSession(p, p.tuning("bozuk"), TunerSettings(), "Si♭ — tenor saksafon")
+        assertEquals("La", s.optionName)
+        close(s.transposeCents, 0.0, 0.0)
     }
 }

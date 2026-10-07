@@ -1,0 +1,107 @@
+{
+  "id": "ud",
+  "ad": "Ud",
+  "aile": "ud",
+  "varsayilanOkuma": "makam",
+  "pencere": 4096,
+  "oktavdanBagimsiz": false,
+  "duzenler": [
+    {
+      "id": "turk-bolahenk",
+      "ad": "Türk udu (bolahenk)",
+      "teller": [
+        {
+          "ad": "6",
+          "nota": "Do♯2"
+        },
+        {
+          "ad": "5",
+          "nota": "Fa♯2"
+        },
+        {
+          "ad": "4",
+          "nota": "Si2"
+        },
+        {
+          "ad": "3",
+          "nota": "Mi3"
+        },
+        {
+          "ad": "2",
+          "nota": "La3"
+        },
+        {
+          "ad": "1",
+          "nota": "Re4"
+        }
+      ],
+      "kaynak": "en.wikipedia.org/wiki/Oud",
+      "dogrulandi": false,
+      "not": "Kaynakta en pes iki tel ¼ ton tiz verilir; bu sürümde yarım ton adımlarıyla gösteriliyor. Öğretmenle doğrulanacak."
+    },
+    {
+      "id": "arap-modern",
+      "ad": "Arap udu (modern)",
+      "teller": [
+        {
+          "ad": "6",
+          "nota": "Fa2"
+        },
+        {
+          "ad": "5",
+          "nota": "La2"
+        },
+        {
+          "ad": "4",
+          "nota": "Re3"
+        },
+        {
+          "ad": "3",
+          "nota": "Sol3"
+        },
+        {
+          "ad": "2",
+          "nota": "Do4"
+        },
+        {
+          "ad": "1",
+          "nota": "Fa4"
+        }
+      ],
+      "kaynak": "en.wikipedia.org/wiki/Oud",
+      "dogrulandi": true
+    },
+    {
+      "id": "arap-eski",
+      "ad": "Arap udu (eski düzen)",
+      "teller": [
+        {
+          "ad": "6",
+          "nota": "Re2"
+        },
+        {
+          "ad": "5",
+          "nota": "Sol2"
+        },
+        {
+          "ad": "4",
+          "nota": "La2"
+        },
+        {
+          "ad": "3",
+          "nota": "Re3"
+        },
+        {
+          "ad": "2",
+          "nota": "Sol3"
+        },
+        {
+          "ad": "1",
+          "nota": "Do4"
+        }
+      ],
+      "kaynak": "en.wikipedia.org/wiki/Oud",
+      "dogrulandi": true
+    }
+  ]
+}
