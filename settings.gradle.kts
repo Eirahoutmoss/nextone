@@ -17,3 +17,5 @@ rootProject.name = "nextone"
 
 include(":dsp")
 include(":tuning")
+include(":core")
+include(":app")

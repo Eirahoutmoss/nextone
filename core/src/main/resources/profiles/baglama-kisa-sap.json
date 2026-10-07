@@ -1,0 +1,39 @@
+{
+  "id": "baglama-kisa-sap",
+  "ad": "Bağlama (kısa sap)",
+  "aile": "baglama",
+  "varsayilanOkuma": "makam",
+  "pencere": 2048,
+  "oktavdanBagimsiz": true,
+  "karar": {
+    "yazili": "La",
+    "varsayilan": "La",
+    "secenekler": ["Do", "Do♯", "Re", "Re♯", "Mi", "Fa", "Fa♯", "Sol", "Sol♯", "La", "La♯", "Si"]
+  },
+  "duzenler": [
+    {
+      "id": "bozuk",
+      "ad": "Bozuk düzen",
+      "teller": [
+        { "ad": "Alt", "nota": "La4" },
+        { "ad": "Orta", "nota": "Re4" },
+        { "ad": "Üst", "nota": "Sol3" }
+      ],
+      "kaynak": "flutnotalari.com/baglama; eksisozluk.com/baglama-duzeni--104155",
+      "dogrulandi": false,
+      "not": "Nota sınıfları kaynaklarda tutarlı; oktav numaraları yalnızca referans sesi içindir ve öğretmenle doğrulanacak."
+    },
+    {
+      "id": "baglama-duzeni",
+      "ad": "Bağlama düzeni",
+      "teller": [
+        { "ad": "Alt", "nota": "Re4" },
+        { "ad": "Orta", "nota": "Sol3" },
+        { "ad": "Üst", "nota": "La3" }
+      ],
+      "kaynak": "eksisozluk.com/baglama-duzeni--104155",
+      "dogrulandi": false,
+      "not": "Nota sınıfları kaynaklarda tutarlı; oktav numaraları öğretmenle doğrulanacak."
+    }
+  ]
+}
