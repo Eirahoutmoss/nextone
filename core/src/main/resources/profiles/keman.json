@@ -10,10 +10,26 @@
       "id": "standart",
       "ad": "Standart",
       "teller": [
-        { "ad": "Sol", "nota": "Sol3" },
-        { "ad": "Re", "nota": "Re4" },
-        { "ad": "La", "nota": "La4" },
-        { "ad": "Mi", "nota": "Mi5" }
+        {
+          "ad": "Sol",
+          "nota": "Sol3",
+          "telSayisi": 1
+        },
+        {
+          "ad": "Re",
+          "nota": "Re4",
+          "telSayisi": 1
+        },
+        {
+          "ad": "La",
+          "nota": "La4",
+          "telSayisi": 1
+        },
+        {
+          "ad": "Mi",
+          "nota": "Mi5",
+          "telSayisi": 1
+        }
       ],
       "kaynak": "Standart keman akordu",
       "dogrulandi": true

@@ -12,27 +12,33 @@
       "teller": [
         {
           "ad": "6",
-          "nota": "Mi2"
+          "nota": "Mi2",
+          "telSayisi": 1
         },
         {
           "ad": "5",
-          "nota": "La2"
+          "nota": "La2",
+          "telSayisi": 1
         },
         {
           "ad": "4",
-          "nota": "Re3"
+          "nota": "Re3",
+          "telSayisi": 1
         },
         {
           "ad": "3",
-          "nota": "Sol3"
+          "nota": "Sol3",
+          "telSayisi": 1
         },
         {
           "ad": "2",
-          "nota": "Si3"
+          "nota": "Si3",
+          "telSayisi": 1
         },
         {
           "ad": "1",
-          "nota": "Mi4"
+          "nota": "Mi4",
+          "telSayisi": 1
         }
       ],
       "kaynak": "Standart gitar akordu",
@@ -44,27 +50,33 @@
       "teller": [
         {
           "ad": "6",
-          "nota": "Re2"
+          "nota": "Re2",
+          "telSayisi": 1
         },
         {
           "ad": "5",
-          "nota": "La2"
+          "nota": "La2",
+          "telSayisi": 1
         },
         {
           "ad": "4",
-          "nota": "Re3"
+          "nota": "Re3",
+          "telSayisi": 1
         },
         {
           "ad": "3",
-          "nota": "Sol3"
+          "nota": "Sol3",
+          "telSayisi": 1
         },
         {
           "ad": "2",
-          "nota": "Si3"
+          "nota": "Si3",
+          "telSayisi": 1
         },
         {
           "ad": "1",
-          "nota": "Mi4"
+          "nota": "Mi4",
+          "telSayisi": 1
         }
       ],
       "kaynak": "Standart gitar akordu",
@@ -76,27 +88,33 @@
       "teller": [
         {
           "ad": "6",
-          "nota": "Re♯2"
+          "nota": "Re♯2",
+          "telSayisi": 1
         },
         {
           "ad": "5",
-          "nota": "Sol♯2"
+          "nota": "Sol♯2",
+          "telSayisi": 1
         },
         {
           "ad": "4",
-          "nota": "Do♯3"
+          "nota": "Do♯3",
+          "telSayisi": 1
         },
         {
           "ad": "3",
-          "nota": "Fa♯3"
+          "nota": "Fa♯3",
+          "telSayisi": 1
         },
         {
           "ad": "2",
-          "nota": "La♯3"
+          "nota": "La♯3",
+          "telSayisi": 1
         },
         {
           "ad": "1",
-          "nota": "Re♯4"
+          "nota": "Re♯4",
+          "telSayisi": 1
         }
       ],
       "kaynak": "Standart gitar akordu",
@@ -108,27 +126,33 @@
       "teller": [
         {
           "ad": "6",
-          "nota": "Re2"
+          "nota": "Re2",
+          "telSayisi": 1
         },
         {
           "ad": "5",
-          "nota": "La2"
+          "nota": "La2",
+          "telSayisi": 1
         },
         {
           "ad": "4",
-          "nota": "Re3"
+          "nota": "Re3",
+          "telSayisi": 1
         },
         {
           "ad": "3",
-          "nota": "Sol3"
+          "nota": "Sol3",
+          "telSayisi": 1
         },
         {
           "ad": "2",
-          "nota": "La3"
+          "nota": "La3",
+          "telSayisi": 1
         },
         {
           "ad": "1",
-          "nota": "Re4"
+          "nota": "Re4",
+          "telSayisi": 1
         }
       ],
       "kaynak": "Yaygın gitar düzeni",
@@ -140,27 +164,33 @@
       "teller": [
         {
           "ad": "6",
-          "nota": "Re2"
+          "nota": "Re2",
+          "telSayisi": 1
         },
         {
           "ad": "5",
-          "nota": "Sol2"
+          "nota": "Sol2",
+          "telSayisi": 1
         },
         {
           "ad": "4",
-          "nota": "Re3"
+          "nota": "Re3",
+          "telSayisi": 1
         },
         {
           "ad": "3",
-          "nota": "Sol3"
+          "nota": "Sol3",
+          "telSayisi": 1
         },
         {
           "ad": "2",
-          "nota": "Si3"
+          "nota": "Si3",
+          "telSayisi": 1
         },
         {
           "ad": "1",
-          "nota": "Re4"
+          "nota": "Re4",
+          "telSayisi": 1
         }
       ],
       "kaynak": "Yaygın gitar düzeni",
@@ -172,31 +202,38 @@
       "teller": [
         {
           "ad": "6",
-          "nota": "Re2"
+          "nota": "Re2",
+          "telSayisi": 1
         },
         {
           "ad": "5",
-          "nota": "La2"
+          "nota": "La2",
+          "telSayisi": 1
         },
         {
           "ad": "4",
-          "nota": "Re3"
+          "nota": "Re3",
+          "telSayisi": 1
         },
         {
           "ad": "3",
-          "nota": "Fa♯3"
+          "nota": "Fa♯3",
+          "telSayisi": 1
         },
         {
           "ad": "2",
-          "nota": "La3"
+          "nota": "La3",
+          "telSayisi": 1
         },
         {
           "ad": "1",
-          "nota": "Re4"
+          "nota": "Re4",
+          "telSayisi": 1
         }
       ],
       "kaynak": "Yaygın gitar düzeni",
       "dogrulandi": true
     }
-  ]
+  ],
+  "bilgi": "Klasik (naylon telli), akustik ve elektro (çelik telli) gitarlar aynı akordu kullanır; tel malzemesi perdeyi değil, gerginliği ve tınıyı değiştirir. Yeni naylon teller günlerce esneyip pesleşir; sık akort gerekir."
 }

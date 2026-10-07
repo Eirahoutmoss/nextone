@@ -14,6 +14,11 @@ class StringMatcher(
     private val targetsHz: DoubleArray,
     private val hysteresisCents: Double = 35.0,
     private val octaveAgnostic: Boolean = false,
+    /**
+     * Grup başına ek hedefler: aynı tel grubundaki oktav telleri (ör. 12 telli gitarın
+     * 6. grubunda Mi2'nin yanındaki Mi3). Sapma, gruptaki en yakın hedefe göre ölçülür.
+     */
+    private val extraTargetsHz: List<DoubleArray> = emptyList(),
 ) {
     var current: Int = -1
         private set
@@ -21,7 +26,13 @@ class StringMatcher(
     /** Hedefe göre sapma (cent). Oktavdan bağımsız modda [-600, 600) aralığına katlanır. */
     fun deviation(frequency: Double, index: Int): Double {
         val c = Notes.cents(frequency, targetsHz[index])
-        return if (octaveAgnostic) fold(c) else c
+        if (octaveAgnostic) return fold(c)
+        var best = c
+        extraTargetsHz.getOrNull(index)?.forEach { t ->
+            val e = Notes.cents(frequency, t)
+            if (abs(e) < abs(best)) best = e
+        }
+        return best
     }
 
     fun match(frequency: Double): Int {

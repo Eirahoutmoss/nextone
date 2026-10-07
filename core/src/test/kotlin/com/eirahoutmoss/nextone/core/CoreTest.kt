@@ -45,7 +45,7 @@ class CoreTest {
     fun `tum profiller yuklenir ve gecerli`() {
         assertEquals(
             listOf(
-                "gitar", "bas-gitar", "keman", "viyola", "viyolonsel", "kontrbas", "mandolin", "ukulele",
+                "gitar", "gitar-12", "bas-gitar", "keman", "viyola", "viyolonsel", "kontrbas", "mandolin", "ukulele",
                 "baglama-kisa-sap", "baglama-uzun-sap", "cura", "divan-sazi", "ud", "serbest",
             ),
             profiles.map { it.id },
@@ -264,5 +264,51 @@ class CoreTest {
         val s = TunerSession(p, p.tuning("bozuk"), TunerSettings(), "Si♭ — tenor saksafon")
         assertEquals("La", s.optionName)
         close(s.transposeCents, 0.0, 0.0)
+    }
+
+    // ---- Tel grupları ----
+
+    @Test
+    fun `on iki telli gitar oktav teli kendi grubuna eslenir`() {
+        val p = profile("gitar-12")
+        val s = TunerSession(p, p.tuning("standart"), TunerSettings())
+        assertEquals(listOf("Mi3"), s.strings[0].octaveNames)
+        assertEquals(2, s.strings[0].count)
+        // 6. grubun oktav teli Mi3 (164,81 Hz), 3 cent pes çalınmış
+        val v = s.update(pitch(164.8138 * 2.0.pow(-3.0 / 1200)), 0)
+        assertEquals(0, v.activeString)
+        close(v.signal!!.deviationCents, -3.0, 0.01)
+        // 4. grubun oktav teli Re4, 4. gruba (Re3) eşlenir; 1. grubun Mi4'üne değil
+        val v2 = s.update(pitch(293.6648), 100)
+        assertEquals(2, v2.activeString)
+        close(v2.signal!!.deviationCents, 0.0, 0.01)
+    }
+
+    @Test
+    fun `tel sayilari`() {
+        fun total(id: String, tuning: String) = profile(id).tuning(tuning).strings.sumOf { it.count ?: 0 }
+        assertEquals(6, total("gitar", "standart"))
+        assertEquals(12, total("gitar-12", "standart"))
+        assertEquals(8, total("mandolin", "standart"))
+        assertEquals(7, total("baglama-kisa-sap", "bozuk"))
+        assertEquals(7, total("baglama-uzun-sap", "baglama-duzeni"))
+        assertEquals(11, total("ud", "turk-bolahenk"))
+        assertEquals(listOf(2, 2, 3), profile("baglama-kisa-sap").tuning("bozuk").strings.map { it.count })
+    }
+
+    @Test
+    fun `oktav telleri ayni nota sinifinda ve grup sayisi tutarli`() {
+        for (p in profiles) for (t in p.tunings) for (st in t.strings) {
+            for (m in st.octaveMidis) {
+                assertEquals(Math.floorMod(st.midi, 12), Math.floorMod(m, 12), "${p.id}/${t.id}/${st.label}")
+                assertTrue((st.count ?: 0) >= 1 + st.octaveMidis.size, "${p.id}/${t.id}/${st.label}: tel sayısı oktav tellerinden az")
+            }
+        }
+    }
+
+    @Test
+    fun `gitar bilgisi naylon ve celik ayni akort`() {
+        val info = profile("gitar").info ?: ""
+        assertTrue("naylon" in info && "çelik" in info && "aynı akordu" in info)
     }
 }

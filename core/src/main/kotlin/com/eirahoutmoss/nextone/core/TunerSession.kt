@@ -22,7 +22,15 @@ data class TunerSettings(
 )
 
 /** Arayüzdeki bir tel düğmesi. */
-data class StringView(val label: String, val targetName: String, val targetHz: Double)
+data class StringView(
+    val label: String,
+    val targetName: String,
+    val targetHz: Double,
+    /** Gruptaki tel sayısı; bilinmiyorsa null. */
+    val count: Int? = null,
+    /** Gruptaki oktav tellerinin adları (ör. "Mi3"). */
+    val octaveNames: List<String> = emptyList(),
+)
 
 /** Ekranın tek bir anlık görüntüsü. */
 data class TunerView(
@@ -77,14 +85,25 @@ class TunerSession(
         if (readingMode == ReadingMode.WESTERN) (if (settings.makamSystemId == "koma53") MakamSystem.KOMA53 else MakamSystem.AEU)
         else EqualTemperament
 
-    val strings: List<StringView> = tuning.strings.map { s ->
+    private val octaveTargets: List<DoubleArray> = tuning.strings.map { s ->
+        s.octaveMidis.map { system.target(it, settings.a4, transposeCents) }.toDoubleArray()
+    }
+
+    val strings: List<StringView> = tuning.strings.mapIndexed { i, s ->
         val hz = system.target(s.midi, settings.a4, transposeCents)
-        StringView(s.label, targetName(s.midi, hz), hz)
+        StringView(
+            label = s.label,
+            targetName = targetName(s.midi, hz),
+            targetHz = hz,
+            count = s.count,
+            octaveNames = s.octaveMidis.mapIndexed { j, m -> targetName(m, octaveTargets[i][j]) },
+        )
     }
 
     private val matcher = StringMatcher(
         strings.map { it.targetHz }.toDoubleArray(),
         octaveAgnostic = profile.octaveAgnostic,
+        extraTargetsHz = octaveTargets,
     )
     private var manualIndex: Int? = null
     private var zoneSince: Long = -1
