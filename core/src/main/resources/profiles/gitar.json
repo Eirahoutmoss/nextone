@@ -1,0 +1,52 @@
+{
+  "id": "gitar",
+  "ad": "Gitar",
+  "aile": "bati",
+  "varsayilanOkuma": "bati",
+  "pencere": 2048,
+  "oktavdanBagimsiz": false,
+  "duzenler": [
+    {
+      "id": "standart",
+      "ad": "Standart",
+      "teller": [
+        { "ad": "6", "nota": "Mi2" },
+        { "ad": "5", "nota": "La2" },
+        { "ad": "4", "nota": "Re3" },
+        { "ad": "3", "nota": "Sol3" },
+        { "ad": "2", "nota": "Si3" },
+        { "ad": "1", "nota": "Mi4" }
+      ],
+      "kaynak": "Standart gitar akordu",
+      "dogrulandi": true
+    },
+    {
+      "id": "drop-d",
+      "ad": "Drop D",
+      "teller": [
+        { "ad": "6", "nota": "Re2" },
+        { "ad": "5", "nota": "La2" },
+        { "ad": "4", "nota": "Re3" },
+        { "ad": "3", "nota": "Sol3" },
+        { "ad": "2", "nota": "Si3" },
+        { "ad": "1", "nota": "Mi4" }
+      ],
+      "kaynak": "Standart gitar akordu",
+      "dogrulandi": true
+    },
+    {
+      "id": "yarim-ton-pes",
+      "ad": "Yarım ton pes",
+      "teller": [
+        { "ad": "6", "nota": "Re♯2" },
+        { "ad": "5", "nota": "Sol♯2" },
+        { "ad": "4", "nota": "Do♯3" },
+        { "ad": "3", "nota": "Fa♯3" },
+        { "ad": "2", "nota": "La♯3" },
+        { "ad": "1", "nota": "Re♯4" }
+      ],
+      "kaynak": "Standart gitar akordu",
+      "dogrulandi": true
+    }
+  ]
+}

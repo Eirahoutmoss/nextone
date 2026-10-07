@@ -34,6 +34,16 @@ interface PitchSystem {
     val id: String
     val displayName: String
     fun read(soundingHz: Double, a4: Double = 440.0, transposeCents: Double = 0.0): Reading
+
+    /**
+     * Yazılı bir notanın (ör. tel hedefi "Sol3") bu sistemdeki GERÇEK hedef frekansı.
+     * 12 eşit seste notanın kendisi; makam sistemlerinde en yakın perde
+     * (La→Dügâh, Re→Nevâ, Sol→Rast, Mi→Hüseynî, Si→Bûselik, Do→Çârgâh, Fa→Acem).
+     */
+    fun target(writtenMidi: Int, a4: Double = 440.0, transposeCents: Double = 0.0): Double {
+        val equal = a4 * 2.0.pow(((writtenMidi - 69) * 100.0 + transposeCents) / 1200.0)
+        return read(equal, a4, transposeCents).targetHz
+    }
 }
 
 private fun log2(x: Double) = ln(x) / ln(2.0)

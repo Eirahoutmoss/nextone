@@ -3,12 +3,21 @@ name: CI
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  test:
+  build:
     runs-on: ubuntu-24.04
+    env:
+      KEYSTORE_B64: ${{ secrets.NEXTONE_KEYSTORE_B64 }}
+      NEXTONE_KEYSTORE_PASSWORD: ${{ secrets.NEXTONE_KEYSTORE_PASSWORD }}
+      NEXTONE_KEY_ALIAS: ${{ secrets.NEXTONE_KEY_ALIAS }}
+      NEXTONE_VERSION_CODE: ${{ github.run_number }}
     steps:
       - uses: actions/checkout@v5
 
@@ -19,36 +28,101 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Testler
-        run: ./gradlew test --no-daemon
-
-      - name: Doğruluk raporu özeti
-        if: always()
+      - name: Sürüm adı
         run: |
-          if [ -f dsp/build/reports/nextone/dsp-dogruluk.md ]; then
-            cat dsp/build/reports/nextone/dsp-dogruluk.md >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "NEXTONE_VERSION_NAME=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+          else
+            echo "NEXTONE_VERSION_NAME=0.0.${GITHUB_RUN_NUMBER}-gelistirme" >> "$GITHUB_ENV"
           fi
+
+      - name: Testler
+        shell: bash
+        run: |
+          set -o pipefail
+          ./gradlew :dsp:test :tuning:test :core:test --no-daemon 2>&1 | tee gradle-test.log
+
+      - name: İmza anahtarı
+        shell: bash
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/nextone.jks"
+            echo "NEXTONE_KEYSTORE_FILE=$RUNNER_TEMP/nextone.jks" >> "$GITHUB_ENV"
+            echo "IMZA=gercek" >> "$GITHUB_ENV"
+          else
+            echo "IMZA=deneme" >> "$GITHUB_ENV"
+            echo "::warning title=İmza::NEXTONE_KEYSTORE_B64 tanımlı değil; APK geçici deneme imzasıyla derleniyor (dağıtılmamalı)."
+          fi
+
+      - name: APK
+        shell: bash
+        run: |
+          set -o pipefail
+          ./gradlew :app:assembleRelease --no-daemon 2>&1 | tee gradle-apk.log
+          mkdir -p dist
+          if [ "$IMZA" = "gercek" ]; then
+            NAME="NexTone-${NEXTONE_VERSION_NAME}.apk"
+          else
+            NAME="NexTone-${NEXTONE_VERSION_NAME}-DENEME-IMZASIZ.apk"
+          fi
+          cp app/build/outputs/apk/release/app-release.apk "dist/$NAME"
+          echo "APK_NAME=$NAME" >> "$GITHUB_ENV"
+
+      - name: APK denetimi
+        shell: bash
+        run: |
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          APK="dist/$APK_NAME"
+          size=$(stat -c %s "$APK")
+          perms=$("$BT/aapt" dump permissions "$APK" | grep -o "name='[^']*'" | sed "s/name='//;s/'//" | paste -sd, -)
+          cert=$("$BT/apksigner" verify --print-certs "$APK" | grep -m1 "SHA-256 digest" | sed 's/.*: //')
+          schemes=$("$BT/apksigner" verify --verbose "$APK" | grep -E "Verified using v[0-9].*true" | sed 's/Verified using //;s/ scheme.*//' | paste -sd, -)
+          ver=$("$BT/aapt" dump badging "$APK" | head -1)
+          echo "::notice title=APK::$APK_NAME | ${size} bayt | izinler: ${perms} | imza şemaları: ${schemes} | sertifika SHA-256: ${cert} | ${ver}"
+
+      - name: Hata özeti
+        if: failure()
+        shell: bash
+        run: |
+          for f in gradle-test.log gradle-apk.log; do
+            [ -f "$f" ] || continue
+            body=$(grep -E "^e: |error:|What went wrong|Could not|Unresolved|FAILED|Exception|^> " "$f" | head -60 | sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')
+            [ -n "$body" ] && echo "::error title=$f::$body"
+          done
 
       - name: Test sayısı ve rapor notu
         if: always()
+        shell: bash
         run: |
           total=0; fails=0; errors=0
           for f in */build/test-results/test/*.xml; do
+            [ -f "$f" ] || continue
             t=$(grep -o 'tests="[0-9]*"' "$f" | head -1 | grep -o '[0-9]*'); total=$((total+t))
             x=$(grep -o 'failures="[0-9]*"' "$f" | head -1 | grep -o '[0-9]*'); fails=$((fails+x))
             e=$(grep -o 'errors="[0-9]*"' "$f" | head -1 | grep -o '[0-9]*'); errors=$((errors+e))
           done
           echo "::notice title=Testler::$total test, $fails başarısız, $errors hata"
           if [ -f dsp/build/reports/nextone/dsp-dogruluk.md ]; then
-            body=$(sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g' dsp/build/reports/nextone/dsp-dogruluk.md)
-            echo "::notice title=DSP doğruluk raporu::$body"
+            cat dsp/build/reports/nextone/dsp-dogruluk.md >> "$GITHUB_STEP_SUMMARY"
           fi
 
-      - name: Raporları sakla
-        if: always()
+      - name: APK'yı sakla
+        if: success()
         uses: actions/upload-artifact@v5
         with:
-          name: raporlar
-          path: |
-            dsp/build/reports/
-            tuning/build/reports/
+          name: apk
+          path: dist/*.apk
+
+      - name: Sürüm yayınla
+        if: success() && startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "$IMZA" != "gercek" ]; then
+            echo "::error title=Sürüm::Gerçek imza anahtarı olmadan sürüm yayınlanmaz."
+            exit 1
+          fi
+          gh release create "$GITHUB_REF_NAME" "dist/$APK_NAME" \
+            --title "NexTone $NEXTONE_VERSION_NAME" \
+            --notes-file docs/surum-notlari/$GITHUB_REF_NAME.md

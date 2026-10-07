@@ -1,0 +1,22 @@
+{
+  "id": "keman",
+  "ad": "Keman",
+  "aile": "bati",
+  "varsayilanOkuma": "bati",
+  "pencere": 2048,
+  "oktavdanBagimsiz": false,
+  "duzenler": [
+    {
+      "id": "standart",
+      "ad": "Standart",
+      "teller": [
+        { "ad": "Sol", "nota": "Sol3" },
+        { "ad": "Re", "nota": "Re4" },
+        { "ad": "La", "nota": "La4" },
+        { "ad": "Mi", "nota": "Mi5" }
+      ],
+      "kaynak": "Standart keman akordu",
+      "dogrulandi": true
+    }
+  ]
+}
